@@ -11,17 +11,48 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using BE;
+using BL;
 
-namespace PLWPF
+namespace PLForms
 {
     /// <summary>
-    /// Interaction logic for AddTest.xaml
+    /// Interaction logic for AddOrder.xaml
     /// </summary>
-    public partial class AddTest : Window
+    public partial class AddOrder : Window
     {
+        BE.Test test;
+        BL.IBL bl;
+        static public int oN = 10000000;
         public AddTest()
         {
             InitializeComponent();
+            test = new BE.Test();
+            this.Main_label.DataContext = test;
+            bl = BL.FactoryBL.getBL();
+            TesterNumberComboBox.ItemsSource = from item in bl.getAllBranch()
+                                               select item.branchNumber;
+            //branchNumberComboBox.DisplayMemberPath = "branchNumber";
+            this.hechsherComboBox.ItemsSource = Enum.GetValues(typeof(BE.kosherLevel));
+
+
+        }
+
+        private void addOrderButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ++oN;
+                test.TestNum = oN;
+                bl.addTest(test);
+                MessageBox.Show(test.TesterId + "!\n your test is added, the order number is " + oN, "Added successfully ! ");
+                test = new BE.Test();
+                this.gridAddTest.DataContext = test;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }
